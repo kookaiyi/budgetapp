@@ -1,6 +1,6 @@
 <main>
   <h1>{{ title() }}</h1>
-  <form (ngSubmit)="addTransaction()">
+  <form (ngSubmit)="editingId() === null ? addTransaction() : updateTransaction()">
   <input
     type="text"
     name="title"
@@ -33,7 +33,7 @@
     [(ngModel)]="form.date"
   />
 
-  <button type="submit">Add Transaction</button>
+  <button type="submit">{{ editingId() === null ? 'Add Transaction' : 'Update Transaction' }}</button>
 </form>
 
 
@@ -52,6 +52,7 @@
             {{ transaction.category }} -
             {{ transaction.date }}
             <button type ="button" (click) = "deleteTransaction(transaction.id)">Delete</button>
+            <button type ="button" (click) = "editTransaction(transaction)">Edit</button>
           </li>
         }
       </ul>

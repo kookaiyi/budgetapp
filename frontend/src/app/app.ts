@@ -15,6 +15,8 @@ export class App implements OnInit {
 
   readonly title = signal('budgetapp');
   readonly transactions = signal<Transaction[]>([]);
+  editingId = signal<number | null>(null);
+
 
   form = {
     title: '',
@@ -65,6 +67,44 @@ export class App implements OnInit {
       },
       error: (error) => {
         console.error('Failed to delete transaction:', error);
+      },
+    });
+  }
+  editTransaction(transaction: Transaction): void {
+  this.editingId.set(transaction.id);
+
+  this.form = {
+    title: transaction.title,
+    amount: transaction.amount,
+    type: transaction.type,
+    category: transaction.category,
+    date: transaction.date,
+    };
+  }
+
+  updateTransaction(): void {
+    const id = this.editingId();
+
+    if (id === null) {
+      return;
+    }
+
+    this.transactionService.updateTransaction(id, this.form).subscribe({
+      next: () => {
+        this.editingId.set(null);
+        this.form = {
+          title: '',
+          amount: 0,
+          type: 'expense',
+          category: '',
+          date: '',
+        };
+
+        this.editingId.set(null);
+        this.loadTransactions();
+      },
+      error: (error) => {
+        console.error('Failed to update transaction:', error);
       },
     });
   }
