@@ -11,11 +11,22 @@ import { TransactionService } from './services/transaction.service';
   styleUrl: './app.css',
 })
 export class App implements OnInit {
+  onMonthChange(month: string): void {
+  this.selectedMonth.set(month);
+  this.loadSummary();
+}
+
   private readonly transactionService = inject(TransactionService);
 
   readonly title = signal('budgetapp');
   readonly transactions = signal<Transaction[]>([]);
   editingId = signal<number | null>(null);
+
+  selectedMonth = signal('2026-06');
+  monthlyIncome = signal(0);
+  monthlyExpense = signal(0);
+  balance = signal(0);
+
 
 
   form = {
@@ -28,6 +39,7 @@ export class App implements OnInit {
 
   ngOnInit(): void {
     this.loadTransactions();
+    this.loadSummary();
   }
 
   private loadTransactions(): void {
@@ -53,6 +65,7 @@ export class App implements OnInit {
         };
 
         this.loadTransactions();
+        this.loadSummary();
       },
       error: (error) => {
         console.error('Failed to create transaction:', error);
@@ -64,6 +77,7 @@ export class App implements OnInit {
     this.transactionService.deleteTransaction(id).subscribe({
       next: () => {
         this.loadTransactions();
+        this.loadSummary();
       },
       error: (error) => {
         console.error('Failed to delete transaction:', error);
@@ -105,6 +119,37 @@ export class App implements OnInit {
       },
       error: (error) => {
         console.error('Failed to update transaction:', error);
+      },
+    });
+  }
+
+  private loadSummary(): void {
+    const month = this.selectedMonth();
+
+    this.transactionService.getMonthlyIncome(month).subscribe({
+      next: (income) => {
+        this.monthlyIncome.set(income.total_income);
+      },
+      error: (error) => {
+        console.error('Failed to load monthly income:', error);
+      },
+    });
+
+    this.transactionService.getMonthlyExpense(month).subscribe({
+      next: (expense) => {
+        this.monthlyExpense.set(expense.total_expenses);
+      },
+      error: (error) => {
+        console.error('Failed to load monthly expense:', error);
+      },
+    });
+
+    this.transactionService.getBalance(month).subscribe({
+      next: (balance) => {
+        this.balance.set(balance.balance);
+      },
+      error: (error) => {
+        console.error('Failed to load balance:', error);
       },
     });
   }

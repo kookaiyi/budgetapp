@@ -1,40 +1,73 @@
 <main>
   <h1>{{ title() }}</h1>
+
+  <section>
+    <h2>Summary</h2>
+    <label>
+      Month
+      <input
+        type="month"
+        name="selectedMonth"
+        [ngModel]="selectedMonth()"
+        (ngModelChange)="onMonthChange($event)"
+      />
+    </label>
+    <div class="summary-grid">
+      <div class="summary-card income-card">
+        <span>Income</span>
+        <strong>{{ monthlyIncome() }}</strong>
+      </div>
+
+      <div class="summary-card expense-card">
+        <span>Expense</span>
+        <strong>{{ monthlyExpense() }}</strong>
+      </div>
+
+      <div class="summary-card balance-card">
+        <span>Balance</span>
+        <strong>{{ balance() }}</strong> 
+      </div>
+    </div>
+  </section>
+
   <form (ngSubmit)="editingId() === null ? addTransaction() : updateTransaction()">
-  <input
-    type="text"
-    name="title"
-    placeholder="Title"
-    [(ngModel)]="form.title"
-  />
+    <input
+      type="text"
+      name="title"
+      placeholder="Title"
+      [(ngModel)]="form.title"
+    />
 
-  <input
-    type="number"
-    name="amount"
-    placeholder="Amount"
-    [(ngModel)]="form.amount"
-  />
+    <input
+      type="number"
+      name="amount"
+      placeholder="Amount"
+      [(ngModel)]="form.amount"
+    />
 
-  <select name="type" [(ngModel)]="form.type">
-    <option value="income">Income</option>
-    <option value="expense">Expense</option>
-  </select>
+    <select name="type" [(ngModel)]="form.type">
+      <option value="income">Income</option>
+      <option value="expense">Expense</option>
+    </select>
 
-  <input
-    type="text"
-    name="category"
-    placeholder="Category"
-    [(ngModel)]="form.category"
-  />
+    <select name="category" [(ngModel)]="form.category">
+      <option value="food">Food</option>
+      <option value="transportation">Transportation</option>
+      <option value="entertainment">Entertainment</option>
+      <option value="utilities">Utilities</option>
+      <option value="others">Others</option>
+    </select>
 
-  <input
-    type="date"
-    name="date"
-    [(ngModel)]="form.date"
-  />
+    <input
+      type="date"
+      name="date"
+      [(ngModel)]="form.date"
+    />
 
-  <button type="submit">{{ editingId() === null ? 'Add Transaction' : 'Update Transaction' }}</button>
-</form>
+    <button type="submit">
+      {{ editingId() === null ? 'Add Transaction' : 'Update Transaction' }}
+    </button>
+  </form>
 
 
   <section>
@@ -51,8 +84,8 @@
             {{ transaction.amount }} -
             {{ transaction.category }} -
             {{ transaction.date }}
-            <button type ="button" (click) = "deleteTransaction(transaction.id)">Delete</button>
-            <button type ="button" (click) = "editTransaction(transaction)">Edit</button>
+            <button type="button" (click)="deleteTransaction(transaction.id)">Delete</button>
+            <button type="button" (click)="editTransaction(transaction)">Edit</button>
           </li>
         }
       </ul>
